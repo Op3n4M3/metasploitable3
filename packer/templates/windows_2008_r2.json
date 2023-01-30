@@ -150,8 +150,6 @@
         "{{user `scripts_dir`}}/configs/microsoft-updates.bat",
         "{{user `scripts_dir`}}/configs/win-updates.ps1",
         "{{user `scripts_dir`}}/installs/openssh.ps1",
-        "{{user `scripts_dir`}}/installs/install_dotnet45.ps1",
-        "{{user `scripts_dir`}}/installs/install_wmf.ps1",
         "{{user `resources_dir`}}/certs/oracle-cert.cer",
         "{{user `resources_dir`}}/certs/gdig2.crt",
         "{{user `resources_dir`}}/certs/comodorsadomainvalidationsecureserverca.crt",
@@ -185,6 +183,16 @@
   ],
   "provisioners": [
     {
+        "type": "shell-local",
+        "only_on": ["linux", "darwin"],
+        "inline": ["cd {{user `resources_dir`}} && {{user `scripts_dir`}}/installs/download-windows-files.sh"]
+    },
+    {
+        "type": "shell-local",
+        "only_on": ["windows"],
+        "inline": ["cd {{user `resources_dir`}} && powershell {{user `scripts_dir`}}/installs/download-windows-files.ps1"]
+    },
+    {
       "type": "file",
       "source": "{{user `scripts_dir`}}",
       "destination": "C:/vagrant"
@@ -193,6 +201,16 @@
       "type": "file",
       "source": "{{user `resources_dir`}}",
       "destination": "C:/vagrant"
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{user `scripts_dir`}}/installs/install_dotnet45.ps1",
+        "{{user `scripts_dir`}}/installs/install_wmf.ps1"
+      ]
+    },
+    {
+      "type": "windows-restart"
     },
     {
       "type": "shell",
